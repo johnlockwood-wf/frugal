@@ -52,7 +52,7 @@ def rpc_test_definitions():
     dictionary = {1: 2, 3: 4, 5: 42}
     tests['testMap'] = dict(args=[dictionary], expected_result=dictionary)
 
-    string_map = {u"a": u"2", u"b": u"blah", u"some": u"thing"}
+    string_map = {u"\u2018a\u2019": u"\u20182\u2019", u"\u2018b\u2019": u"\u2018blah\u2019", u"\u2018kraken\u2019": u"\u2018thing\u2019"}
     tests['testStringMap'] = dict(args=[string_map], expected_result=string_map)
 
     set = {1, 2, 2, 42}
