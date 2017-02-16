@@ -16,11 +16,8 @@ def rpc_test_definitions():
 
     tests['testVoid'] = dict(args=None, expected_result=None)
 
-    thing = u"thing"
-    tests['testString'] = dict(args=[thing], expected_result="Not a thing")
-
-    unithing = u"thing\u2014"
-    tests['testUniString'] = dict(args=[unithing], expected_result=unithing)
+    thing = u"thing\u2014"
+    tests['testString'] = dict(args=[thing], expected_result=thing)
 
     tests['testBool'] = dict(args=[True], expected_result=True)
 
