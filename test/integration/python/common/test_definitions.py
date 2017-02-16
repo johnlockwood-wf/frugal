@@ -20,7 +20,7 @@ def rpc_test_definitions():
     tests['testString'] = dict(args=[thing], expected_result="Not a thing")
 
     unithing = u"thing\u2014"
-    tests['testUniString'] = dict(args=[thing], expected_result=unithing)
+    tests['testUniString'] = dict(args=[unithing], expected_result=unithing)
 
     tests['testBool'] = dict(args=[True], expected_result=True)
 
