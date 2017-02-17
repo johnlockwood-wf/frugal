@@ -1082,7 +1082,7 @@ func (g *Generator) generateClientRecvMethod(method *parser.Method) string {
 	contents += tabtab + "if result.success is not None:\n"
 	contents += tabtabtab + "return result.success\n"
 	contents += tabtab + fmt.Sprintf(
-		"x = TApplicationException(TApplicationExceptionType.MISSING_RESULT, u\"%s failed: unknown result\")\n", method.Name)
+		"x = TApplicationException(TApplicationExceptionType.MISSING_RESULT, \"%s failed: unknown result\")\n", method.Name)
 	contents += tabtab + "raise x\n\n"
 
 	return contents
