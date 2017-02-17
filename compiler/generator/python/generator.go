@@ -158,7 +158,7 @@ func (g *Generator) generateConstantValue(t *parser.Type, value interface{}, ind
 		case "i8", "byte", "i16", "i32", "i64", "double":
 			return parser.NonIdentifier, fmt.Sprintf("%v", value)
 		case "string":
-			return parser.NonIdentifier, fmt.Sprintf("u%s", strconv.Quote(value.(string)))
+			return parser.NonIdentifier, fmt.Sprintf("%s", strconv.Quote(value.(string)))
 		case "binary":
 			return parser.NonIdentifier, fmt.Sprintf("%s", strconv.Quote(value.(string)))
 		case "list", "set":
