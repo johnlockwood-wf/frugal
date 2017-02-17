@@ -80,14 +80,14 @@ def rpc_test_definitions():
     insanity.userMap = {Numberz.FIVE: 5, Numberz.EIGHT: 8}
     insanity.xtructs = [truck1, truck2]
     expected_result = {1:
-                     {2: Insanity(
-                         xtructs=[Xtruct(string_thing='Goodbye4', byte_thing=4, i32_thing=4, i64_thing=4),
-                                  Xtruct(string_thing='Hello2', byte_thing=2, i32_thing=2, i64_thing=2)],
-                         userMap={8: 8, 5: 5}),
-                      3: Insanity(
-                         xtructs=[Xtruct(string_thing='Goodbye4', byte_thing=4, i32_thing=4, i64_thing=4),
-                                  Xtruct(string_thing='Hello2', byte_thing=2, i32_thing=2, i64_thing=2)],
-                         userMap={8: 8, 5: 5})}, 2: {}}
+        {2: Insanity(
+            xtructs=[Xtruct(string_thing='Goodbye4', byte_thing=4, i32_thing=4, i64_thing=4),
+                     Xtruct(string_thing='Hello2', byte_thing=2, i32_thing=2, i64_thing=2)],
+            userMap={8: 8, 5: 5}),
+            3: Insanity(
+                xtructs=[Xtruct(string_thing='Goodbye4', byte_thing=4, i32_thing=4, i64_thing=4),
+                         Xtruct(string_thing='Hello2', byte_thing=2, i32_thing=2, i64_thing=2)],
+                userMap={8: 8, 5: 5})}, 2: {}}
     tests['testInsanity'] = dict(args=[insanity], expected_result=expected_result)
 
     multi = Xtruct()

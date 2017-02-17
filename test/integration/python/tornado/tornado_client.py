@@ -145,6 +145,7 @@ def test_rpc(client, ctx):
 
         try:
             if args:
+
                 result = yield method(ctx, *args)
             else:
                 result = yield method(ctx)
