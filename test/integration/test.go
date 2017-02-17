@@ -91,7 +91,13 @@ func main() {
 				// Run each configuration
 				crossrunner.RunConfig(task.pair, task.port)
 				// Check return code
-				if task.pair.ReturnCode == crossrunner.TestFailure {
+				if task.pair.ReturnCode != 0 {
+					if task.pair.ReturnCode == crossrunner.CrossrunnerFailure {
+						// If there was a crossrunner failure, add logs to the client
+						if err := crossrunner.WriteCustomData(task.pair.Client.Logs.Name(), task.pair.Err.Error()); err != nil {
+							panic(err)
+						}
+					}
 					// if failed, add to the failed count
 					failLog.mu.Lock()
 					failLog.failed += 1
@@ -100,9 +106,6 @@ func main() {
 						panic(err)
 					}
 					failLog.mu.Unlock()
-				} else if task.pair.ReturnCode == crossrunner.CrossrunnerFailure {
-					// If there was a crossrunner failure, fail immediately
-					panic(task.pair.Err)
 				}
 				// Print configuration results to console
 				crossrunner.PrintPairResult(task.pair)
