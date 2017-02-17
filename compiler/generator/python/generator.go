@@ -205,7 +205,7 @@ func (g *Generator) generateConstantValue(t *parser.Type, value interface{}, ind
 			for _, field := range s.Fields {
 				if name == field.Name {
 					_, val := g.generateConstantValue(field.Type, pair.Value, ind+tab)
-					contents += fmt.Sprintf(tab+ind+"u\"%s\": %s,\n", name, val)
+					contents += fmt.Sprintf(tab+ind+"\"%s\": %s,\n", name, val)
 				}
 			}
 		}
@@ -236,13 +236,13 @@ func (g *Generator) GenerateEnum(enum *parser.Enum) error {
 
 	contents += tab + "_VALUES_TO_NAMES = {\n"
 	for _, value := range enum.Values {
-		contents += fmt.Sprintf(tabtab+"%d: u\"%s\",\n", value.Value, value.Name)
+		contents += fmt.Sprintf(tabtab+"%d: \"%s\",\n", value.Value, value.Name)
 	}
 	contents += tab + "}\n\n"
 
 	contents += tab + "_NAMES_TO_VALUES = {\n"
 	for _, value := range enum.Values {
-		contents += fmt.Sprintf(tabtab+"u\"%s\": %d,\n", value.Name, value.Value)
+		contents += fmt.Sprintf(tabtab+"\"%s\": %d,\n", value.Name, value.Value)
 	}
 	contents += tab + "}\n\n"
 
