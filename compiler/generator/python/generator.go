@@ -157,7 +157,9 @@ func (g *Generator) generateConstantValue(t *parser.Type, value interface{}, ind
 			return parser.NonIdentifier, strings.Title(fmt.Sprintf("%v", value))
 		case "i8", "byte", "i16", "i32", "i64", "double":
 			return parser.NonIdentifier, fmt.Sprintf("%v", value)
-		case "string", "binary":
+		case "string":
+			return parser.NonIdentifier, fmt.Sprintf("u%s", strconv.Quote(value.(string)))
+		case "binary":
 			return parser.NonIdentifier, fmt.Sprintf("%s", strconv.Quote(value.(string)))
 		case "list", "set":
 			contents := ""
@@ -203,7 +205,7 @@ func (g *Generator) generateConstantValue(t *parser.Type, value interface{}, ind
 			for _, field := range s.Fields {
 				if name == field.Name {
 					_, val := g.generateConstantValue(field.Type, pair.Value, ind+tab)
-					contents += fmt.Sprintf(tab+ind+"\"%s\": %s,\n", name, val)
+					contents += fmt.Sprintf(tab+ind+"u\"%s\": %s,\n", name, val)
 				}
 			}
 		}
@@ -234,13 +236,13 @@ func (g *Generator) GenerateEnum(enum *parser.Enum) error {
 
 	contents += tab + "_VALUES_TO_NAMES = {\n"
 	for _, value := range enum.Values {
-		contents += fmt.Sprintf(tabtab+"%d: \"%s\",\n", value.Value, value.Name)
+		contents += fmt.Sprintf(tabtab+"%d: u\"%s\",\n", value.Value, value.Name)
 	}
 	contents += tab + "}\n\n"
 
 	contents += tab + "_NAMES_TO_VALUES = {\n"
 	for _, value := range enum.Values {
-		contents += fmt.Sprintf(tabtab+"\"%s\": %d,\n", value.Name, value.Value)
+		contents += fmt.Sprintf(tabtab+"u\"%s\": %d,\n", value.Name, value.Value)
 	}
 	contents += tab + "}\n\n"
 
@@ -453,18 +455,18 @@ func (g *Generator) generateValidate(s *parser.Struct) string {
 	if s.Type != parser.StructTypeUnion {
 		for _, field := range s.Fields {
 			if field.Modifier == parser.Required {
-				contents += fmt.Sprintf(tabtab + "if self.%s is None:\n", field.Name)
-				contents += fmt.Sprintf(tabtabtab + "raise TProtocol.TProtocolException(type=TProtocol.TProtocolException.INVALID_DATA, message='Required field %s is unset!')\n", field.Name)
+				contents += fmt.Sprintf(tabtab+"if self.%s is None:\n", field.Name)
+				contents += fmt.Sprintf(tabtabtab+"raise TProtocol.TProtocolException(type=TProtocol.TProtocolException.INVALID_DATA, message='Required field %s is unset!')\n", field.Name)
 			}
 		}
 	} else {
 		contents += tabtab + "set_fields = 0\n"
 		for _, field := range s.Fields {
-			contents += fmt.Sprintf(tabtab + "if self.%s is not None:\n", field.Name)
+			contents += fmt.Sprintf(tabtab+"if self.%s is not None:\n", field.Name)
 			contents += tabtabtab + "set_fields += 1\n"
 		}
 		contents += tabtab + "if set_fields != 1:\n"
-		contents += fmt.Sprintf(tabtabtab+"raise TProtocol.TProtocolException(type=TProtocol.TProtocolException.INVALID_DATA, message='The union did not have exactly one field set, {} were set'.format(set_fields))\n")
+		contents += fmt.Sprintf(tabtabtab + "raise TProtocol.TProtocolException(type=TProtocol.TProtocolException.INVALID_DATA, message='The union did not have exactly one field set, {} were set'.format(set_fields))\n")
 	}
 
 	contents += tabtab + "return\n\n"
@@ -550,7 +552,12 @@ func (g *Generator) generateReadFieldRec(field *parser.Field, first bool, ind st
 				panic("unknown type: " + underlyingType.Name)
 			}
 		}
-		contents += fmt.Sprintf(ind+"%s%s = iprot.read%s()\n", prefix, field.Name, thriftType)
+		switch underlyingType.Name {
+		case "string":
+			contents += fmt.Sprintf(ind+"%s%s = iprot.read%s().decode('utf-8')\n", prefix, field.Name, thriftType)
+		default:
+			contents += fmt.Sprintf(ind+"%s%s = iprot.read%s()\n", prefix, field.Name, thriftType)
+		}
 	} else if g.Frugal.IsStruct(underlyingType) {
 		g.qualifiedTypeName(underlyingType)
 		contents += fmt.Sprintf(ind+"%s%s = %s()\n", prefix, field.Name, g.qualifiedTypeName(underlyingType))
@@ -615,7 +622,12 @@ func (g *Generator) generateWriteFieldRec(field *parser.Field, first bool, ind s
 				panic("unknown type: " + underlyingType.Name)
 			}
 		}
-		contents += fmt.Sprintf(ind+"oprot.write%s(%s%s)\n", thriftType, prefix, field.Name)
+		switch underlyingType.Name {
+		case "string":
+			contents += fmt.Sprintf(ind+"oprot.write%s(%s%s.encode('utf-8'))\n", thriftType, prefix, field.Name)
+		default:
+			contents += fmt.Sprintf(ind+"oprot.write%s(%s%s)\n", thriftType, prefix, field.Name)
+		}
 	} else if g.Frugal.IsStruct(underlyingType) {
 		contents += fmt.Sprintf(ind+"%s%s.write(oprot)\n", prefix, field.Name)
 	} else if underlyingType.IsContainer() {
@@ -1070,7 +1082,7 @@ func (g *Generator) generateClientRecvMethod(method *parser.Method) string {
 	contents += tabtab + "if result.success is not None:\n"
 	contents += tabtabtab + "return result.success\n"
 	contents += tabtab + fmt.Sprintf(
-		"x = TApplicationException(TApplicationExceptionType.MISSING_RESULT, \"%s failed: unknown result\")\n", method.Name)
+		"x = TApplicationException(TApplicationExceptionType.MISSING_RESULT, u\"%s failed: unknown result\")\n", method.Name)
 	contents += tabtab + "raise x\n\n"
 
 	return contents
