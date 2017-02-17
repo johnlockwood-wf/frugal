@@ -145,6 +145,9 @@ def test_rpc(client, ctx):
 
         try:
             if args:
+                # if rpc == "testString":
+                #     print("ENCODING THING")
+                #     args = unicode(args)
                 result = yield method(ctx, *args)
             else:
                 result = yield method(ctx)
