@@ -16,7 +16,7 @@ def rpc_test_definitions():
 
     tests['testVoid'] = dict(args=None, expected_result=None)
 
-    thing = u"thing\u2014"
+    thing = u"thing\u2016"
     tests['testString'] = dict(args=[thing], expected_result=thing)
 
     tests['testBool'] = dict(args=[True], expected_result=True)

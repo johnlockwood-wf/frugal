@@ -170,7 +170,7 @@ def client_middleware(next):
     def handler(method, args):
         global middleware_called
         middleware_called = True
-        print("{}({}) = ".format(method.im_func.func_name, args[1:]), end="")
+        print(u"{}({}) = ".format(method.im_func.func_name, args[1:]), end="")
         ret = next(method, args)
         ret.add_done_callback(log_future)
         return ret
@@ -179,9 +179,9 @@ def client_middleware(next):
 
 def log_future(future):
     try:
-        print("{}".format(future.result()))
+        print(u"{}".format(future.result()))
     except Exception as ex:
-        print("{}".format(ex))
+        print(u"{}".format(ex))
 
 
 if __name__ == '__main__':
