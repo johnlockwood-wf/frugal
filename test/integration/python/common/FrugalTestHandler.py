@@ -2,7 +2,9 @@ import time
 
 from thrift.Thrift import TApplicationException
 
-from frugal_test.f_FrugalTest import Iface, Xtruct, Xception, Xception2, Insanity
+from frugal_test.f_FrugalTest import Iface, Xtruct, Xception, Xception2
+
+from common.utils import *
 
 
 class FrugalTestHandler(Iface):
@@ -11,7 +13,8 @@ class FrugalTestHandler(Iface):
         return
 
     def testString(self, ctx, thing):
-        print("test_string({})".format(thing))
+        # Need to have different handler for py3 vs py2
+        print("test_string({})".format(string_of_all_the_things(thing)))
         return thing
 
     def testBool(self, ctx, thing):

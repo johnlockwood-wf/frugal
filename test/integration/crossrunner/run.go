@@ -96,6 +96,7 @@ func RunConfig(pair *Pair, port int) {
 	cStartTime := time.Now()
 
 	if err = client.Start(); err != nil {
+		log.Debugf("Failed to start %s client", pair.Client.Name)
 		pair.ReturnCode = TestFailure
 		pair.Err = err
 	}
@@ -109,13 +110,14 @@ func RunConfig(pair *Pair, port int) {
 		// TODO: It's a bit annoying to have this message duplicated in the
 		// unexpected_failures.log. Is there a better way to report this?
 		if err = writeClientTimeout(pair, pair.Client.Name); err != nil {
-			log.Debugf("Failed to write client timeout to %s", pair.Client.Logs.Name())
+			log.Debugf("Failed to write timeout error to %s", pair.Client.Logs.Name())
+
 			reportCrossrunnerFailure(pair, err)
 			return
 		}
 
 		if err = client.Process.Kill(); err != nil {
-			log.Debugf("Failed to kill % client", pair.Client.Name)
+			log.Infof("Error killing %s", pair.Client.Name)
 			reportCrossrunnerFailure(pair, err)
 			return
 		}
@@ -124,9 +126,9 @@ func RunConfig(pair *Pair, port int) {
 		break
 	case err := <-done:
 		if err != nil {
-			log.Debugf("Failed to start %s client", pair.Client.Name)
-			reportCrossrunnerFailure(pair, err)
-			return
+			log.Debugf("Error in %s client", pair.Client.Name)
+			pair.ReturnCode = TestFailure
+			pair.Err = err
 		}
 	}
 

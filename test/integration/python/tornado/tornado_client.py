@@ -141,6 +141,7 @@ def test_rpc(client, ctx):
         method = getattr(client, rpc)
         args = vals['args']
         expected_result = vals['expected_result']
+        ctx = FContext(rpc)
         result = None
 
         try:
@@ -170,7 +171,8 @@ def client_middleware(next):
     def handler(method, args):
         global middleware_called
         middleware_called = True
-        print(u"{}({}) = ".format(method.im_func.func_name, args[1:]), end="")
+        print(u"{}({}) = ".format(method.im_func.func_name,
+                                  string_of_all_the_things(args[1:])), end="")
         ret = next(method, args)
         ret.add_done_callback(log_future)
         return ret
@@ -179,9 +181,9 @@ def client_middleware(next):
 
 def log_future(future):
     try:
-        print(u"{}".format(future.result()))
+        print(u"{}".format(string_of_all_the_things(future.result())))
     except Exception as ex:
-        print(u"{}".format(ex))
+        print(u"{}".format(string_of_all_the_things(ex)))
 
 
 if __name__ == '__main__':

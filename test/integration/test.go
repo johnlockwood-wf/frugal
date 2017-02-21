@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"sync"
@@ -92,17 +93,20 @@ func main() {
 				wg.Add(1)
 				// Run each configuration
 				crossrunner.RunConfig(task.pair, task.port)
+				errorLog := "\n"
 				// Check return code
 				if task.pair.ReturnCode != 0 {
 					if task.pair.ReturnCode == crossrunner.CrossrunnerFailure {
 						// If there was a crossrunner failure, add logs to the client
-						errorLog := "*****CROSSRUNNER FAILURE*****\n"
-						errorLog += task.pair.Err.Error()
-						if err := crossrunner.WriteCustomData(task.pair.Client.Logs.Name(), errorLog); err != nil {
-							log.Infof("Failed to append crossrunner failure to %s", task.pair.Client.Logs.Name())
-
-							panic(err)
-						}
+						errorLog += "***** CROSSRUNNER FAILURE *****\n"
+					} else {
+						errorLog += "***** TEST FAILURE *****\n"
+					}
+					// Add error to client logs
+					errorLog += fmt.Sprintf("%s\n", task.pair.Err.Error())
+					if err := crossrunner.WriteCustomData(task.pair.Client.Logs.Name(), errorLog); err != nil {
+						log.Infof("Failed to append crossrunner failure to %s", task.pair.Client.Logs.Name())
+						panic(err)
 					}
 					// if failed, add to the failed count
 					failLog.mu.Lock()

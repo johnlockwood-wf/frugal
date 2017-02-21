@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 import sys
 
@@ -58,7 +60,18 @@ def check_for_failure(actual, expected):
     elif expected != actual:
         failed = True
     if failed:
-        print(u"Unexpected result, expected:\n{e}\n but received:\n{a} ".format(
-            e=expected, a=actual))
+        if sys.version_info[0] == 3:
+            print("Unexpected result, expected:\n{e}\n but received:\n{a} ".format(
+                e=expected, a=actual))
+        if sys.version_info[0] == 2:
+            print("Unexpected result, expected:\n{e}\n but received:\n{a} ".format(
+                e=string_of_all_the_things(expected), a=string_of_all_the_things(actual)))
 
     return failed
+
+
+def string_of_all_the_things(thing):
+    if isinstance(thing, unicode):
+        return thing.encode('ascii', 'ignore')
+    else:
+        return thing
