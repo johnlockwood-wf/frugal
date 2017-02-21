@@ -71,7 +71,7 @@ def check_for_failure(actual, expected):
 
 
 def string_of_all_the_things(thing):
-    if isinstance(thing, unicode):
+    if sys.version_info[0] == 2 and isinstance(thing, unicode):
         return thing.encode('ascii', 'ignore')
     else:
         return thing
